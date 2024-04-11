@@ -21,8 +21,8 @@ public class PoseDataReceiver : MonoBehaviour
     {
         try
         {
-            client = new UdpClient(port);
-            endPoint = new IPEndPoint(IPAddress.Parse(serverAddress), port);
+            client = new UdpClient(port); //IPAddress.Parse(serverAddress)
+            endPoint = new IPEndPoint(IPAddress.Any, port);
             Debug.Log("Connected to server");
         }
         catch (Exception e)
