@@ -43,12 +43,28 @@ public class PoseDataReceiver : MonoBehaviour
         {
             if (client.Available > 0)
             {
-                byte[] receivedBytes = client.Receive(ref endPoint);
-                string receivedData = System.Text.Encoding.ASCII.GetString(receivedBytes);
-                Debug.Log("Received data from server: " + receivedData);
+                //byte[] receivedBytes = client.Receive(ref endPoint);
+                //string receivedData = System.Text.Encoding.ASCII.GetString(receivedBytes);
+                //Debug.Log("Received data from server: " + receivedData);
 
-                // Parse received JSON data here and use it as needed
-                ParseAndUseData(receivedData);
+                //// Parse received JSON data here and use it as needed
+                //ParseAndUseData(receivedData);
+
+                byte[] receivedBytes = client.Receive(ref endPoint);
+
+                Debug.Log(receivedBytes.Length);
+                // Convert byte array to float arrays
+                float[] normalizedLandmarks = new float[receivedBytes.Length / sizeof(float) / 6]; // 3 floats per landmark (x, y, z) for normalized and world landmarks
+                float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 6];
+
+                Buffer.BlockCopy(receivedBytes, 0, normalizedLandmarks, 0, receivedBytes.Length / 2);
+                Buffer.BlockCopy(receivedBytes, receivedBytes.Length/2 , worldLandmarks, 0, receivedBytes.Length / 2);
+
+
+
+                // Use received data as needed
+                UseData(normalizedLandmarks, worldLandmarks);
+
             }
         }
         catch (Exception e)
@@ -57,25 +73,34 @@ public class PoseDataReceiver : MonoBehaviour
         }
     }
 
-    private void ParseAndUseData(string jsonData)
+    private void UseData(float[] normalizedLandmarks, float[] worldLandmarks)
     {
-        // Parse JSON data and use it as needed
-        try
-        {
-            // Example parsing code
-            // JObject parsedData = JObject.Parse(jsonData);
-            // string normalizedLandmarks = parsedData["normalized_landmarks"].ToString();
-            // string worldLandmarks = parsedData["world_landmarks"].ToString();
-            // Debug.Log("Normalized Landmarks: " + normalizedLandmarks);
-            // Debug.Log("World Landmarks: " + worldLandmarks);
+        // Use received data as needed
+        Debug.Log("Normalized Landmarks: " + string.Join(", ", normalizedLandmarks));
+        Debug.Log("World Landmarks: " + string.Join(", ", worldLandmarks));
 
-            // Replace this example code with your actual processing logic
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error parsing JSON data: " + e.Message);
-        }
+        // Replace this example code with your actual processing logic
     }
+
+    //private void ParseAndUseData(string jsonData)
+    //{
+    //    // Parse JSON data and use it as needed
+    //    try
+    //    {
+    //        // Example parsing code
+    //        JObject parsedData = JObject.Parse(jsonData);
+    //        string normalizedLandmarks = parsedData["normalized_landmarks"].ToString();
+    //        string worldLandmarks = parsedData["world_landmarks"].ToString();
+    //        Debug.Log("Normalized Landmarks: " + normalizedLandmarks);
+    //        Debug.Log("World Landmarks: " + worldLandmarks);
+
+    //        // Replace this example code with your actual processing logic
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        Debug.LogError("Error parsing JSON data: " + e.Message);
+    //    }
+    //}
 
     private void OnDestroy()
     {
