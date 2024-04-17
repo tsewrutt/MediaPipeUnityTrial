@@ -15,6 +15,9 @@ public class PoseDataReceiver : MonoBehaviour
     void Start()
     {
         ConnectToServer();
+
+        // Start listening for data asynchronously
+        //client.BeginReceive(ReceiveCallback, null);
     }
 
     private void ConnectToServer()
@@ -31,11 +34,50 @@ public class PoseDataReceiver : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    //// Update is called once per frame
     void Update()
     {
         ReceiveData();
     }
+
+    //private void ReceiveCallback(IAsyncResult result)
+    //{
+    //    try
+    //    {
+    //        byte[] receivedBytes = client.EndReceive(result, ref endPoint);
+
+    //        // Ensure received data is large enough to be processed
+    //        if (receivedBytes.Length % sizeof(float) != 0)
+    //        {
+    //            Debug.LogError("Received data size is not a multiple of float size");
+    //            return;
+    //        }
+
+    //        // Calculate number of floats
+    //        int numFloats = (receivedBytes.Length / 2) / sizeof(float);
+
+    //        // Create array to hold float data
+    //        float[] normalizedLandmarks = new float[numFloats];
+    //        float[] worldLandmarks = new float[numFloats];
+
+
+    //        //float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 3];
+
+    //        Buffer.BlockCopy(receivedBytes, 0, normalizedLandmarks, 0, receivedBytes.Length / 2);
+    //        Buffer.BlockCopy(receivedBytes, receivedBytes.Length / 2, worldLandmarks, 0, receivedBytes.Length / 2);
+
+    //        // Process received data here (e.g., pass it to another method)
+    //        ProcessLandmarks(normalizedLandmarks, worldLandmarks);
+
+    //        // Continue listening for more data
+    //        client.BeginReceive(ReceiveCallback, null);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        Debug.LogError("Error receiving data: " + e.Message);
+    //    }
+    //}
+
 
     private void ReceiveData()
     {
@@ -43,27 +85,27 @@ public class PoseDataReceiver : MonoBehaviour
         {
             if (client.Available > 0)
             {
-                //byte[] receivedBytes = client.Receive(ref endPoint);
-                //string receivedData = System.Text.Encoding.ASCII.GetString(receivedBytes);
-                //Debug.Log("Received data from server: " + receivedData);
-
-                //// Parse received JSON data here and use it as needed
-                //ParseAndUseData(receivedData);
 
                 byte[] receivedBytes = client.Receive(ref endPoint);
+                //byte[] receivedBytes = client.Receive(ref endPoint);
 
-                Debug.Log(receivedBytes.Length);
-                // Convert byte array to float arrays
-                float[] normalizedLandmarks = new float[receivedBytes.Length / sizeof(float) / 6]; // 3 floats per landmark (x, y, z) for normalized and world landmarks
-                float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 6];
+                // Calculate number of floats
+                int numFloats = (receivedBytes.Length / 2) / sizeof(float);
+
+                // Create array to hold float data
+                float[] normalizedLandmarks = new float[numFloats];
+                float[] worldLandmarks = new float[numFloats];
+
+
+                //float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 3];
 
                 Buffer.BlockCopy(receivedBytes, 0, normalizedLandmarks, 0, receivedBytes.Length / 2);
-                Buffer.BlockCopy(receivedBytes, receivedBytes.Length/2 , worldLandmarks, 0, receivedBytes.Length / 2);
+                Buffer.BlockCopy(receivedBytes, receivedBytes.Length / 2, worldLandmarks, 0, receivedBytes.Length / 2);
 
 
 
                 // Use received data as needed
-                UseData(normalizedLandmarks, worldLandmarks);
+                ProcessLandmarks(normalizedLandmarks, worldLandmarks);
 
             }
         }
@@ -72,35 +114,13 @@ public class PoseDataReceiver : MonoBehaviour
             Debug.LogError("Error receiving data from server: " + e.Message);
         }
     }
-
-    private void UseData(float[] normalizedLandmarks, float[] worldLandmarks)
+    private void ProcessLandmarks(float[] normalizedLandmarks, float[] worldLandmarks)
     {
-        // Use received data as needed
-        Debug.Log("Normalized Landmarks: " + string.Join(", ", normalizedLandmarks));
-        Debug.Log("World Landmarks: " + string.Join(", ", worldLandmarks));
-
-        // Replace this example code with your actual processing logic
+        // Process received landmarks here
+        Debug.Log("Normalized landmarks: " + string.Join(", ", normalizedLandmarks));
+        Debug.Log("\nWorld Landmarks:" + string.Join(", ", worldLandmarks));
     }
-
-    //private void ParseAndUseData(string jsonData)
-    //{
-    //    // Parse JSON data and use it as needed
-    //    try
-    //    {
-    //        // Example parsing code
-    //        JObject parsedData = JObject.Parse(jsonData);
-    //        string normalizedLandmarks = parsedData["normalized_landmarks"].ToString();
-    //        string worldLandmarks = parsedData["world_landmarks"].ToString();
-    //        Debug.Log("Normalized Landmarks: " + normalizedLandmarks);
-    //        Debug.Log("World Landmarks: " + worldLandmarks);
-
-    //        // Replace this example code with your actual processing logic
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Debug.LogError("Error parsing JSON data: " + e.Message);
-    //    }
-    //}
+    
 
     private void OnDestroy()
     {
