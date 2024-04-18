@@ -11,6 +11,8 @@ public class PoseDataReceiver : MonoBehaviour
     private UdpClient client;
     private IPEndPoint endPoint;
 
+    public float[] normalizedLandmarks;
+    public float[] worldLandmarks;
     // Start is called before the first frame update
     void Start()
     {
@@ -40,45 +42,6 @@ public class PoseDataReceiver : MonoBehaviour
         ReceiveData();
     }
 
-    //private void ReceiveCallback(IAsyncResult result)
-    //{
-    //    try
-    //    {
-    //        byte[] receivedBytes = client.EndReceive(result, ref endPoint);
-
-    //        // Ensure received data is large enough to be processed
-    //        if (receivedBytes.Length % sizeof(float) != 0)
-    //        {
-    //            Debug.LogError("Received data size is not a multiple of float size");
-    //            return;
-    //        }
-
-    //        // Calculate number of floats
-    //        int numFloats = (receivedBytes.Length / 2) / sizeof(float);
-
-    //        // Create array to hold float data
-    //        float[] normalizedLandmarks = new float[numFloats];
-    //        float[] worldLandmarks = new float[numFloats];
-
-
-    //        //float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 3];
-
-    //        Buffer.BlockCopy(receivedBytes, 0, normalizedLandmarks, 0, receivedBytes.Length / 2);
-    //        Buffer.BlockCopy(receivedBytes, receivedBytes.Length / 2, worldLandmarks, 0, receivedBytes.Length / 2);
-
-    //        // Process received data here (e.g., pass it to another method)
-    //        ProcessLandmarks(normalizedLandmarks, worldLandmarks);
-
-    //        // Continue listening for more data
-    //        client.BeginReceive(ReceiveCallback, null);
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Debug.LogError("Error receiving data: " + e.Message);
-    //    }
-    //}
-
-
     private void ReceiveData()
     {
         try
@@ -93,8 +56,8 @@ public class PoseDataReceiver : MonoBehaviour
                 int numFloats = (receivedBytes.Length / 2) / sizeof(float);
 
                 // Create array to hold float data
-                float[] normalizedLandmarks = new float[numFloats];
-                float[] worldLandmarks = new float[numFloats];
+                normalizedLandmarks = new float[numFloats];
+                worldLandmarks = new float[numFloats];
 
 
                 //float[] worldLandmarks = new float[receivedBytes.Length / sizeof(float) / 3];
@@ -114,11 +77,11 @@ public class PoseDataReceiver : MonoBehaviour
             Debug.LogError("Error receiving data from server: " + e.Message);
         }
     }
-    private void ProcessLandmarks(float[] normalizedLandmarks, float[] worldLandmarks)
+    private void ProcessLandmarks(float[] normalized_Landmarks, float[] world_Landmarks)
     {
         // Process received landmarks here
-        Debug.Log("Normalized landmarks: " + string.Join(", ", normalizedLandmarks));
-        Debug.Log("\nWorld Landmarks:" + string.Join(", ", worldLandmarks));
+        Debug.Log("Normalized landmarks: " + string.Join(", ", normalized_Landmarks));
+        Debug.Log("\nWorld Landmarks:" + string.Join(", ", world_Landmarks));
     }
     
 
