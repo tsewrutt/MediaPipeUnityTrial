@@ -13,11 +13,13 @@ public class PoseDataReceiver : MonoBehaviour
 
     public float[] normalizedLandmarks;
     public float[] worldLandmarks;
+
+    public PythonInitializer init;
     // Start is called before the first frame update
     void Start()
     {
+        init.RunPythonScript();
         ConnectToServer();
-
         // Start listening for data asynchronously
         //client.BeginReceive(ReceiveCallback, null);
     }
@@ -68,7 +70,7 @@ public class PoseDataReceiver : MonoBehaviour
 
 
                 // Use received data as needed
-                ProcessLandmarks(normalizedLandmarks, worldLandmarks);
+                //ProcessLandmarks(normalizedLandmarks, worldLandmarks);
 
             }
         }
@@ -89,5 +91,6 @@ public class PoseDataReceiver : MonoBehaviour
     {
         if (client != null)
             client.Close();
+            init.StopPythonProcess();
     }
 }

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,13 +8,13 @@ public class Dancer : MonoBehaviour
 {
     // Start is called before the first frame update
     public PoseDataReceiver receiver;
-    //public GameObject pointPrefab;
-
+    
 
     //if set to true = normalized landmarks, false = world landmarks
-    public bool selectPoses = true;
+    //World Landmarks recreate what we want
+    //public bool selectPoses = true;
 
-
+    [Header("Joint Points")]
     public GameObject[] points;
     private Vector3[] normalized_landmark;
     private Vector3[] world_landmark;
@@ -22,6 +23,7 @@ public class Dancer : MonoBehaviour
         //set the points to dedicated slot
         //generate points // we know it will be 33 points all the time
         //points = new GameObject[32];
+        
         normalized_landmark = new Vector3[33];
         world_landmark = new Vector3[33];
 
@@ -52,7 +54,7 @@ public class Dancer : MonoBehaviour
         {
             vectorCount = normalized_landmark_flat.Length / 3;
             
-            for (int i = 0; i < vectorCount; i++ )
+            for (int i = 0; i < vectorCount; i++)
             {
                 int xIndex = i * 3;
                 int yIndex = i * 3 + 1;
@@ -63,18 +65,21 @@ public class Dancer : MonoBehaviour
                 normalized_landmark[i] = new Vector3(normalized_landmark_flat[xIndex] * -1, normalized_landmark_flat[yIndex] * -1, normalized_landmark_flat[zIndex] * -1);
                 world_landmark[i] = new Vector3(world_landmark_flat[xIndex] * -1, world_landmark_flat[yIndex] * -1, world_landmark_flat[zIndex] * -1);
 
-                if(selectPoses)
-                {
-                    points[i].transform.position = normalized_landmark[i];
-                }
-                else
-                {
+                //if(selectPoses)
+                //{
+                //    points[i].transform.position = normalized_landmark[i];
+                //}
+                //else
+                //{
                     points[i].transform.position = world_landmark[i];
-                }
+                
+                //}
+
             }
 
 
         }
 
     }
+
 }
